@@ -9,6 +9,9 @@ let timeLeft = 30; // Game duration in seconds
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
 
+// Wait for button click to reset the game
+document.getElementById("reset-btn").addEventListener("click", resetGame);
+
 // Get water can element and set up mouse tracking
 waterCan = document.getElementById("water-can");
 document.addEventListener("mousemove", moveWaterCan);
@@ -125,4 +128,32 @@ function endGame() {
   drops.forEach(drop => drop.remove());
   
   alert(`Game Over! Your final score: ${score}`);
+}
+
+function resetGame() {
+  // Stop the current game if running
+  if (gameRunning) {
+    gameRunning = false;
+    clearInterval(dropMaker);
+    clearInterval(gameTimer);
+  }
+  
+  // Reset game state
+  score = 0;
+  timeLeft = 30;
+  
+  // Update display
+  document.getElementById("score").textContent = score;
+  document.getElementById("time").textContent = timeLeft;
+  
+  // Remove any remaining drops
+  const drops = document.querySelectorAll('.water-drop');
+  drops.forEach(drop => drop.remove());
+  
+  // Reset water can position to center
+  const gameContainer = document.getElementById("game-container");
+  const canWidth = waterCan.offsetWidth;
+  const gameWidth = gameContainer.offsetWidth;
+  waterCan.style.left = `${(gameWidth - canWidth) / 2}px`;
+  waterCan.style.transform = 'translateX(0)';
 }
