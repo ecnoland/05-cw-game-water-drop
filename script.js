@@ -60,6 +60,12 @@ function createDrop() {
   const drop = document.createElement("div");
   drop.className = "water-drop";
 
+  // 20% chance to create a bad drop
+  const isBadDrop = Math.random() < 0.2;
+  if (isBadDrop) {
+    drop.classList.add("bad-drop");
+  }
+
   // Make drops different sizes for visual variety
   const initialSize = 60;
   const sizeMultiplier = Math.random() * 0.8 + 0.5;
@@ -82,7 +88,13 @@ function createDrop() {
   const collisionCheck = setInterval(() => {
     if (checkCollision(drop, waterCan)) {
       // Drop caught!
-      score += 10;
+      if (drop.classList.contains("bad-drop")) {
+        // Bad drop: subtract 10 points
+        score -= 10;
+      } else {
+        // Good drop: add 10 points
+        score += 10;
+      }
       document.getElementById("score").textContent = score;
       drop.remove();
       clearInterval(collisionCheck);
