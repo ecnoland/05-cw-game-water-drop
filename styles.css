@@ -110,6 +110,10 @@ body {
     background-color: #ff4444;
 }
 
+.green-drop {
+    background-color: #4FCB53;
+}
+
 .game-title {
     color: #131313;
     font-size: 48px;

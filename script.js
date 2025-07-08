@@ -58,7 +58,10 @@ function startGame() {
 function createDrop() {
   // Create a new div element that will be our water drop
   const drop = document.createElement("div");
-  drop.className = "water-drop";
+  
+  // 25% chance to create a green drop that costs points
+  const isGreenDrop = Math.random() < 0.25;
+  drop.className = isGreenDrop ? "water-drop green-drop" : "water-drop";
 
   // Make drops different sizes for visual variety
   const initialSize = 60;
@@ -82,7 +85,13 @@ function createDrop() {
   const collisionCheck = setInterval(() => {
     if (checkCollision(drop, waterCan)) {
       // Drop caught!
-      score += 10;
+      if (isGreenDrop) {
+        // Green drops cost 10 points
+        score -= 10;
+      } else {
+        // Regular drops give 10 points
+        score += 10;
+      }
       document.getElementById("score").textContent = score;
       drop.remove();
       clearInterval(collisionCheck);
