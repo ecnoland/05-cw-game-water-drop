@@ -97,7 +97,7 @@ function createDrop() {
       }
       document.getElementById("score").textContent = score;
       
-      // Check if player reached 200 points
+      // Check if player reached 100 points
       if (checkWinCondition()) {
         clearInterval(collisionCheck);
         return;
@@ -159,7 +159,7 @@ function createConfetti() {
 function showWinMessage() {
   const winMessage = document.createElement('div');
   winMessage.className = 'win-message';
-  winMessage.innerHTML = '🎉 WINNER! 🎉<br>You reached 200 points!';
+  winMessage.innerHTML = '🎉 WINNER! 🎉<br>You reached 100 points!';
   document.body.appendChild(winMessage);
   
   // Remove win message after 4 seconds
@@ -169,7 +169,7 @@ function showWinMessage() {
 }
 
 function checkWinCondition() {
-  if (score >= 200) {
+  if (score >= 100) {
     // Player wins!
     createConfetti();
     showWinMessage();
