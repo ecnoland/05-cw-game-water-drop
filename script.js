@@ -96,6 +96,13 @@ function createDrop() {
         score += 10;
       }
       document.getElementById("score").textContent = score;
+      
+      // Check if player reached 200 points
+      if (checkWinCondition()) {
+        clearInterval(collisionCheck);
+        return;
+      }
+      
       drop.remove();
       clearInterval(collisionCheck);
     }
@@ -118,7 +125,7 @@ function checkCollision(drop, waterCan) {
            dropRect.top > canRect.bottom);
 }
 
-function endGame() {
+function endGame(isWin = false) {
   gameRunning = false;
   clearInterval(dropMaker);
   clearInterval(gameTimer);
@@ -127,7 +134,49 @@ function endGame() {
   const drops = document.querySelectorAll('.water-drop');
   drops.forEach(drop => drop.remove());
   
-  alert(`Game Over! Your final score: ${score}`);
+  // Only show alert if it's not a win (win has its own message)
+  if (!isWin) {
+    alert(`Game Over! Your final score: ${score}`);
+  }
+}
+
+function createConfetti() {
+  // Create 15 confetti pieces
+  for (let i = 0; i < 15; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + '%';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(confetti);
+    
+    // Remove confetti after animation
+    setTimeout(() => {
+      confetti.remove();
+    }, 3000);
+  }
+}
+
+function showWinMessage() {
+  const winMessage = document.createElement('div');
+  winMessage.className = 'win-message';
+  winMessage.innerHTML = '🎉 WINNER! 🎉<br>You reached 200 points!';
+  document.body.appendChild(winMessage);
+  
+  // Remove win message after 4 seconds
+  setTimeout(() => {
+    winMessage.remove();
+  }, 4000);
+}
+
+function checkWinCondition() {
+  if (score >= 200) {
+    // Player wins!
+    createConfetti();
+    showWinMessage();
+    endGame(true);
+    return true;
+  }
+  return false;
 }
 
 function resetGame() {
