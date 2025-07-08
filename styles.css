@@ -134,7 +134,6 @@ body {
     height: 80px;
     cursor: pointer;
     z-index: 10;
-    transition: left 0.1s ease;
 }
 
 .water-can img {

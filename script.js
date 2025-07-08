@@ -3,6 +3,8 @@ let gameRunning = false; // Keeps track of whether game is active or not
 let dropMaker; // Will store our timer that creates drops regularly
 let score = 0; // Track player score
 let waterCan; // Reference to the water can element
+let gameTimer; // Timer for game duration
+let timeLeft = 30; // Game duration in seconds
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
@@ -13,19 +15,20 @@ document.addEventListener("mousemove", moveWaterCan);
 
 function moveWaterCan(event) {
   if (!gameRunning) return;
-
+  
   const gameContainer = document.getElementById("game-container");
   const rect = gameContainer.getBoundingClientRect();
   const mouseX = event.clientX - rect.left;
-
+  
   // Keep water can within game boundaries
   const canWidth = waterCan.offsetWidth;
   const gameWidth = gameContainer.offsetWidth;
   const minX = canWidth / 2;
   const maxX = gameWidth - canWidth / 2;
-
+  
   const clampedX = Math.max(minX, Math.min(maxX, mouseX));
   waterCan.style.left = `${clampedX - canWidth / 2}px`;
+  waterCan.style.transform = 'translateX(0)';
 }
 
 function startGame() {
@@ -34,10 +37,22 @@ function startGame() {
 
   gameRunning = true;
   score = 0;
+  timeLeft = 30;
   document.getElementById("score").textContent = score;
+  document.getElementById("time").textContent = timeLeft;
 
   // Create new drops every second (1000 milliseconds)
   dropMaker = setInterval(createDrop, 1000);
+
+  // Update the timer every second
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
 }
 
 function createDrop() {
@@ -89,4 +104,16 @@ function checkCollision(drop, waterCan) {
            dropRect.left > canRect.right || 
            dropRect.bottom < canRect.top || 
            dropRect.top > canRect.bottom);
+}
+
+function endGame() {
+  gameRunning = false;
+  clearInterval(dropMaker);
+  clearInterval(gameTimer);
+  
+  // Remove any remaining drops
+  const drops = document.querySelectorAll('.water-drop');
+  drops.forEach(drop => drop.remove());
+  
+  alert(`Game Over! Your final score: ${score}`);
 }
