@@ -1,15 +1,40 @@
 // Variables to control game state
 let gameRunning = false; // Keeps track of whether game is active or not
 let dropMaker; // Will store our timer that creates drops regularly
+let score = 0; // Track player score
+let waterCan; // Reference to the water can element
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
+
+// Get water can element and set up mouse tracking
+waterCan = document.getElementById("water-can");
+document.addEventListener("mousemove", moveWaterCan);
+
+function moveWaterCan(event) {
+  if (!gameRunning) return;
+
+  const gameContainer = document.getElementById("game-container");
+  const rect = gameContainer.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+
+  // Keep water can within game boundaries
+  const canWidth = waterCan.offsetWidth;
+  const gameWidth = gameContainer.offsetWidth;
+  const minX = canWidth / 2;
+  const maxX = gameWidth - canWidth / 2;
+
+  const clampedX = Math.max(minX, Math.min(maxX, mouseX));
+  waterCan.style.left = `${clampedX - canWidth / 2}px`;
+}
 
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
 
   gameRunning = true;
+  score = 0;
+  document.getElementById("score").textContent = score;
 
   // Create new drops every second (1000 milliseconds)
   dropMaker = setInterval(createDrop, 1000);
@@ -38,8 +63,30 @@ function createDrop() {
   // Add the new drop to the game screen
   document.getElementById("game-container").appendChild(drop);
 
+  // Check for collision with water can during fall
+  const collisionCheck = setInterval(() => {
+    if (checkCollision(drop, waterCan)) {
+      // Drop caught!
+      score += 10;
+      document.getElementById("score").textContent = score;
+      drop.remove();
+      clearInterval(collisionCheck);
+    }
+  }, 50);
+
   // Remove drops that reach the bottom (weren't clicked)
   drop.addEventListener("animationend", () => {
     drop.remove(); // Clean up drops that weren't caught
+    clearInterval(collisionCheck);
   });
+}
+
+function checkCollision(drop, waterCan) {
+  const dropRect = drop.getBoundingClientRect();
+  const canRect = waterCan.getBoundingClientRect();
+  
+  return !(dropRect.right < canRect.left || 
+           dropRect.left > canRect.right || 
+           dropRect.bottom < canRect.top || 
+           dropRect.top > canRect.bottom);
 }
