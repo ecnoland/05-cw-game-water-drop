@@ -11,8 +11,8 @@ let currentDifficulty = 'normal'; // Current difficulty setting
 // Difficulty settings
 const difficulties = {
     easy: { time: 40, target: 100 },
-    normal: { time: 35, target: 90 },
-    hard: { time: 30, target: 100 }
+    normal: { time: 35, target: 150 },
+    hard: { time: 30, target: 200 }
 };
 
 // Wait for button click to start the game
