@@ -155,10 +155,6 @@ body {
     transform: scale(1.1);  /* Slight grow effect on hover */
 }
 
-.bad-drop {
-    background-color: #ff4444;
-}
-
 .green-drop {
     background-color: rgb(40,64,63) !important;
 }
