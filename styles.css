@@ -141,7 +141,7 @@ body {
     position: absolute;
     width: 60px;  /* increased from 40px */
     height: 60px; /* increased from 40px */
-    background-color: rgb(63,191,187);
+    background-color: rgb(63,191,187) !important;
     border-radius: 50%;
     animation: dropFall linear forwards;
     transform-origin: center;
