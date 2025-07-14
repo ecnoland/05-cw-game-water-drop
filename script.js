@@ -5,6 +5,15 @@ let score = 0; // Track player score
 let waterCan; // Reference to the water can element
 let gameTimer; // Timer for game duration
 let timeLeft = 30; // Game duration in seconds
+let winTarget = 100; // Points needed to win
+let currentDifficulty = 'normal'; // Current difficulty setting
+
+// Difficulty settings
+const difficulties = {
+    easy: { time: 40, target: 100 },
+    normal: { time: 35, target: 90 },
+    hard: { time: 30, target: 100 }
+};
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
@@ -12,9 +21,24 @@ document.getElementById("start-btn").addEventListener("click", startGame);
 // Wait for button click to reset the game
 document.getElementById("reset-btn").addEventListener("click", resetGame);
 
+// Wait for difficulty change
+document.getElementById("difficulty").addEventListener("change", handleDifficultyChange);
+
 // Get water can element and set up mouse tracking
 waterCan = document.getElementById("water-can");
 document.addEventListener("mousemove", moveWaterCan);
+
+function handleDifficultyChange(event) {
+    if (gameRunning) return; // Don't change during game
+    
+    currentDifficulty = event.target.value;
+    const settings = difficulties[currentDifficulty];
+    timeLeft = settings.time;
+    winTarget = settings.target;
+    
+    // Update display
+    document.getElementById("time").textContent = timeLeft;
+}
 
 function moveWaterCan(event) {
   if (!gameRunning) return;
@@ -40,7 +64,12 @@ function startGame() {
 
   gameRunning = true;
   score = 0;
-  timeLeft = 30;
+  
+  // Set time and target based on difficulty
+  const settings = difficulties[currentDifficulty];
+  timeLeft = settings.time;
+  winTarget = settings.target;
+  
   document.getElementById("score").textContent = score;
   document.getElementById("time").textContent = timeLeft;
 
@@ -89,15 +118,15 @@ function createDrop() {
     if (checkCollision(drop, waterCan)) {
       // Drop caught!
       if (isGreenDrop) {
-        // Green drops cost 10 points
-        score -= 10;
+        // Green drops cost 10 points (with score protection)
+        score = Math.max(0, score - 10);
       } else {
         // Regular drops give 10 points
         score += 10;
       }
       document.getElementById("score").textContent = score;
       
-      // Check if player reached 100 points
+      // Check if player reached win target
       if (checkWinCondition()) {
         clearInterval(collisionCheck);
         return;
@@ -159,7 +188,7 @@ function createConfetti() {
 function showWinMessage() {
   const winMessage = document.createElement('div');
   winMessage.className = 'win-message';
-  winMessage.innerHTML = '🎉 WINNER! 🎉<br>You reached 100 points!';
+  winMessage.innerHTML = `🎉 WINNER! 🎉<br>You reached ${winTarget} points on ${currentDifficulty.toUpperCase()} mode!`;
   document.body.appendChild(winMessage);
   
   // Remove win message after 4 seconds
@@ -169,7 +198,7 @@ function showWinMessage() {
 }
 
 function checkWinCondition() {
-  if (score >= 100) {
+  if (score >= winTarget) {
     // Player wins!
     createConfetti();
     showWinMessage();
@@ -189,7 +218,9 @@ function resetGame() {
   
   // Reset game state
   score = 0;
-  timeLeft = 30;
+  const settings = difficulties[currentDifficulty];
+  timeLeft = settings.time;
+  winTarget = settings.target;
   
   // Update display
   document.getElementById("score").textContent = score;
@@ -199,6 +230,12 @@ function resetGame() {
   const drops = document.querySelectorAll('.water-drop');
   drops.forEach(drop => drop.remove());
   
+  // Remove any confetti or win messages
+  const confetti = document.querySelectorAll('.confetti');
+  confetti.forEach(piece => piece.remove());
+  const winMessages = document.querySelectorAll('.win-message');
+  winMessages.forEach(msg => msg.remove());
+  
   // Reset water can position to center
   const gameContainer = document.getElementById("game-container");
   const canWidth = waterCan.offsetWidth;
@@ -206,3 +243,13 @@ function resetGame() {
   waterCan.style.left = `${(gameWidth - canWidth) / 2}px`;
   waterCan.style.transform = 'translateX(0)';
 }
+
+// Initialize game on page load
+window.addEventListener('DOMContentLoaded', () => {
+  // Set initial difficulty
+  currentDifficulty = document.getElementById('difficulty').value;
+  const settings = difficulties[currentDifficulty];
+  timeLeft = settings.time;
+  winTarget = settings.target;
+  document.getElementById("time").textContent = timeLeft;
+});
