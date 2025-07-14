@@ -81,14 +81,17 @@ function playCelebrationSound() {
 
 // Function to show halfway message
 function showHalfwayMessage() {
+    console.log('🎉 showHalfwayMessage function called!');
     const halfwayMessage = document.createElement('div');
     halfwayMessage.className = 'halfway-message';
     halfwayMessage.innerHTML = '🌟 Great job - halfway there! 🌟';
     document.body.appendChild(halfwayMessage);
+    console.log('📧 Halfway message element added to DOM:', halfwayMessage);
     
     // Remove message after 3 seconds
     setTimeout(() => {
         halfwayMessage.remove();
+        console.log('🗑️ Halfway message removed from DOM');
     }, 3000);
 }
 
@@ -97,13 +100,11 @@ function checkProgress() {
     // Check halfway point - exactly half of the win target
     const halfwayPoint = winTarget / 2;
     
-    // Debug: Log halfway checking (remove this later)
-    if (!halfwayMessageShown && score >= halfwayPoint - 10 && score <= halfwayPoint + 10) {
-        console.log(`Score: ${score}, Halfway point: ${halfwayPoint}, Win target: ${winTarget}`);
-    }
+    // Enhanced debug logging
+    console.log(`checkProgress called: Score=${score}, Halfway=${halfwayPoint}, Target=${winTarget}, MessageShown=${halfwayMessageShown}`);
     
     if (!halfwayMessageShown && score >= halfwayPoint && score < winTarget) {
-        console.log(`Showing halfway message! Score: ${score}, Halfway: ${halfwayPoint}`);
+        console.log(`🌟 TRIGGERING HALFWAY MESSAGE! Score: ${score}, Halfway: ${halfwayPoint}`);
         showHalfwayMessage();
         halfwayMessageShown = true;
     }
@@ -323,5 +324,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const settings = difficulties[currentDifficulty];
   timeLeft = settings.time;
   winTarget = settings.target;
+  halfwayMessageShown = false; // Initialize halfway message flag
   document.getElementById("time").textContent = timeLeft;
+  console.log(`Game initialized: Difficulty=${currentDifficulty}, Target=${winTarget}, Halfway=${winTarget/2}`);
 });
