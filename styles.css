@@ -160,7 +160,7 @@ body {
 }
 
 .green-drop {
-    background-color: #4FCB53;
+    background-color: rgb(40,64,63) !important;
 }
 
 .game-title {
