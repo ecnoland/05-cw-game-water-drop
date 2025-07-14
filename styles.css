@@ -254,6 +254,38 @@ body {
     animation: bounce 0.6s ease-in-out;
 }
 
+.halfway-message {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, #4FCB53, #8BD1CB);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1001;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    animation: slideInBounce 0.8s ease-out;
+}
+
+@keyframes slideInBounce {
+    0% {
+        transform: translate(-50%, -50%) translateY(-30px) scale(0.8);
+        opacity: 0;
+    }
+    60% {
+        transform: translate(-50%, -50%) translateY(5px) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         transform: translate(-50%, -50%) translateY(0);

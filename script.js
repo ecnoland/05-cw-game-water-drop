@@ -7,6 +7,7 @@ let gameTimer; // Timer for game duration
 let timeLeft = 30; // Game duration in seconds
 let winTarget = 100; // Points needed to win
 let currentDifficulty = 'normal'; // Current difficulty setting
+let halfwayMessageShown = false; // Track if halfway message has been shown
 
 // Difficulty settings
 const difficulties = {
@@ -38,6 +39,78 @@ function handleDifficultyChange(event) {
     
     // Update display
     document.getElementById("time").textContent = timeLeft;
+}
+
+// Function to play celebratory sound
+function playCelebrationSound() {
+    // Create audio context for generating a celebratory tune
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Play a sequence of notes for celebration
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        let noteIndex = 0;
+        
+        function playNote() {
+            if (noteIndex < notes.length) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(notes[noteIndex], audioContext.currentTime);
+                oscillator.type = 'triangle';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                noteIndex++;
+                setTimeout(playNote, 150);
+            }
+        }
+        
+        playNote();
+    } catch (error) {
+        console.log('Audio not supported in this browser');
+    }
+}
+
+// Function to show halfway message
+function showHalfwayMessage() {
+    const halfwayMessage = document.createElement('div');
+    halfwayMessage.className = 'halfway-message';
+    halfwayMessage.innerHTML = '🌟 Great job - halfway there! 🌟';
+    document.body.appendChild(halfwayMessage);
+    
+    // Remove message after 3 seconds
+    setTimeout(() => {
+        halfwayMessage.remove();
+    }, 3000);
+}
+
+// Function to check progress and show appropriate messages
+function checkProgress() {
+    // Check halfway point
+    const halfwayPoint = Math.floor(winTarget / 2);
+    if (!halfwayMessageShown && score >= halfwayPoint && score < winTarget) {
+        showHalfwayMessage();
+        halfwayMessageShown = true;
+    }
+    
+    // Check win condition
+    if (score >= winTarget) {
+        // Player wins!
+        playCelebrationSound();
+        createConfetti();
+        showWinMessage();
+        endGame(true);
+        return true;
+    }
+    return false;
 }
 
 function moveWaterCan(event) {
@@ -126,8 +199,8 @@ function createDrop() {
       }
       document.getElementById("score").textContent = score;
       
-      // Check if player reached win target
-      if (checkWinCondition()) {
+      // Check progress and win condition
+      if (checkProgress()) {
         clearInterval(collisionCheck);
         return;
       }
@@ -197,17 +270,6 @@ function showWinMessage() {
   }, 4000);
 }
 
-function checkWinCondition() {
-  if (score >= winTarget) {
-    // Player wins!
-    createConfetti();
-    showWinMessage();
-    endGame(true);
-    return true;
-  }
-  return false;
-}
-
 function resetGame() {
   // Stop the current game if running
   if (gameRunning) {
@@ -218,6 +280,7 @@ function resetGame() {
   
   // Reset game state
   score = 0;
+  halfwayMessageShown = false; // Reset halfway message flag
   const settings = difficulties[currentDifficulty];
   timeLeft = settings.time;
   winTarget = settings.target;
@@ -235,6 +298,8 @@ function resetGame() {
   confetti.forEach(piece => piece.remove());
   const winMessages = document.querySelectorAll('.win-message');
   winMessages.forEach(msg => msg.remove());
+  const halfwayMessages = document.querySelectorAll('.halfway-message');
+  halfwayMessages.forEach(msg => msg.remove());
   
   // Reset water can position to center
   const gameContainer = document.getElementById("game-container");
