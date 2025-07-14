@@ -94,9 +94,16 @@ function showHalfwayMessage() {
 
 // Function to check progress and show appropriate messages
 function checkProgress() {
-    // Check halfway point
-    const halfwayPoint = Math.floor(winTarget / 2);
+    // Check halfway point - exactly half of the win target
+    const halfwayPoint = winTarget / 2;
+    
+    // Debug: Log halfway checking (remove this later)
+    if (!halfwayMessageShown && score >= halfwayPoint - 10 && score <= halfwayPoint + 10) {
+        console.log(`Score: ${score}, Halfway point: ${halfwayPoint}, Win target: ${winTarget}`);
+    }
+    
     if (!halfwayMessageShown && score >= halfwayPoint && score < winTarget) {
+        console.log(`Showing halfway message! Score: ${score}, Halfway: ${halfwayPoint}`);
         showHalfwayMessage();
         halfwayMessageShown = true;
     }
